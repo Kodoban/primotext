@@ -30,16 +30,16 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        self.ui.action_addModel.triggered.connect(lambda x: self.add_new_model_action(con,cur))
+        self.ui.action_addModel.triggered.connect(lambda x: self.add_new_model_action())
 
         self.ui.pushButton_generateText.clicked.connect(lambda x: self.generate_text_button_clicked())
 
-        
         self.load_existing_models()
 
     def load_existing_models(self):
-        con, cur, existing_models = core.get_existing_models()
-        
+        # con, cur, existing_models = core.get_existing_models()
+        existing_models = core.get_existing_models()
+
         for model in existing_models:
             self.add_model_to_list_widget(model)
 
@@ -55,7 +55,7 @@ class MainWindow(QMainWindow):
 
         return item
 
-    def add_new_model_action(self, con, cur):
+    def add_new_model_action(self):
         # Create a file dialog object
         file_dialog = QFileDialog(self)
         file_dialog.setWindowTitle("Choose text file to create a model")
@@ -65,23 +65,23 @@ class MainWindow(QMainWindow):
         #file_path, _ = QFileDialog.getOpenFileName(None, "Select a file")
 
 
-        # Show the file dialog window and get the selected file path
+        # Show the file dialog window and get the selected source file path
         if file_dialog.exec() == QFileDialog.Accepted:
 
-            file_path = file_dialog.selectedFiles()[0]
+            user_source_file_path = file_dialog.selectedFiles()[0]
             #print("Selected file:", file_path)
             #file_path, _ = file_dialog.getOpenFileName()
-            if file_path:
+            if user_source_file_path:
 
                 # Check if file model has already been created
                 token_length = self.ui.spinBox_tokensPerEntry.value()
-                model_name, model_path, create_new_list_item = core.check_add_model(con, cur, file_path, token_length)
+                model_name, model_path, create_new_list_item = core.check_add_model(user_source_file_path, token_length)
 
                 # Add entry to list if it does not exist already, and make it the selected choice
                 # TODO: Differentiate between models with the same name (e.g. using last modified date on file)
 
                 if create_new_list_item:
-                    new_item = self.add_model_to_list_widget(core.generate_model(model_name, model_path, file_path, token_length))
+                    new_item = self.add_model_to_list_widget(core.generate_model(model_name, model_path, user_source_file_path, token_length))
                     self.ui.listWidget_generatedModels.setCurrentItem(new_item)
 
     def generate_text_button_clicked(self):
