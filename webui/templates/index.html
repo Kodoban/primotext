@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Primotext</title>
+
+{% endblock %}
+
+{% block body %}
+<header>
+    <p>
+        HELLO!
+    </p>
+</header>
+
+<main>
+
+    <section id="add-file">
+        <label for="file-input" style=" background: #5f0202;">Upload model</label>
+        <input type="file" id="file-input" name="file-input1" accept="text/plain" 
+        style="opacity: 0;">
+            
+
+        <!-- <input type="file" id="file-input" accept="text/plain"> -->
+        <!-- <button onclick="selectFileToCreateModel()">Select Text File</button>     -->
+    </section>
+
+    <section id="generate-section">
+
+        <label for="models">Models</label>
+        <select name="available-models" id="available-models" size="8">
+            
+            {% for model in models %}
+                <option value="{{ model }}">{{ model }}</option>
+            {% endfor %}
+
+            <!-- Maybe pass checksum too as id for better verification? -->
+            <!-- {% for model in models %}
+                <option value="{\{ model }\}">{\{ model.get_name() }\}</option>
+            {% endfor %} -->
+
+            <!-- <option value="hello1">Hey!</option>
+            <option value="world">World!</option> -->
+        </select>
+
+        <ul id="token-options">
+            <li>
+                <label>Words to generate</label>
+                <input id="word-num" type="number" value="1" min="1"/>
+            </li>
+            <li>
+                <label>Tokens per entry</label>
+                <input id="token-count" type="number" value="1" min="1"/>
+            </li>
+        </ul>
+        <ul id="printing-options">
+            <!-- Show details on hover (e.g. csv is used for imports) -->
+            <li id="print-matrix-to-csv">
+                <label>Print matrix to .csv</label>
+                <input type="checkbox"></button>
+            </li>
+            <li id="print-tokens-to-txt">
+                <label>Print tokens to .txt</label>
+                <input type="checkbox">
+            </li>
+        </ul>
+    </section>
+
+    <!-- <form action="/" method="post"> -->
+    <textarea id="generated-text-area" placeholder="Write something"></textarea>
+    <button id="generate-text-button" onclick="setGenerateTextButtonEventListener()">Generate text</button>
+
+        <!-- <input type="submit" name="generate" value="Generate"> -->
+    <!-- </form> -->
+
+    
+    
+
+</main>
+
+<footer>
+
+</footer>
+{% endblock %}

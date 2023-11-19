@@ -1,0 +1,10 @@
+_models/
+core/.__pycache__/
+core/sample_texts/
+core/model_generator/__pycache__/
+core/text_generator/__pycache__/
+gui/__pycache__/
+gui/Chat-qGPT/
+gui/Chat-qGPT.pyproject
+gui/Chat-qGPT.pyproject.user
+venv/
