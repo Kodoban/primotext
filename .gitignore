@@ -1,5 +1,6 @@
+text_models.db
 _models/
-core/.__pycache__/
+core/__pycache__/
 core/sample_texts/
 core/model_generator/__pycache__/
 core/text_generator/__pycache__/
