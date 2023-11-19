@@ -16,11 +16,11 @@ def get_existing_models():
     con, cur = __check_create_database()
 
     cur.execute("SELECT model_name, model_path, source_file_path, token_length FROM models")
-    queried_models = dbCur.fetchall()
+    queried_models = cur.fetchall()
     existing_models = []
     for model_info in queried_models:
         model_name, model_path, source_file, token_length = model_info
-        models.append(generate_model(model_name, model_path, source_file, token_length))
+        existing_models.append(generate_model(model_name, model_path, source_file, token_length))
 
     return con, cur, existing_models
 
