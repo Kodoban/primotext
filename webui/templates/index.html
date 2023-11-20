@@ -15,10 +15,11 @@
 <main>
 
     <section id="add-file">
-        <label for="file-input" style=" background: #5f0202;">Upload model</label>
-        <input type="file" id="file-input" name="file-input1" accept="text/plain" 
-        style="opacity: 0;">
-            
+        <form method="post" enctype="multipart/form-data">
+            <label for="file-input" style=" background: #5f0202;">Upload model</label>
+            <input type="file" id="file-input" name="file-input" accept="text/plain" 
+            onchange="selectFileUploadEventListener(this)" style="opacity: 0;">
+        </form>
 
         <!-- <input type="file" id="file-input" accept="text/plain"> -->
         <!-- <button onclick="selectFileToCreateModel()">Select Text File</button>     -->
@@ -30,16 +31,8 @@
         <select name="available-models" id="available-models" size="8">
             
             {% for model in models %}
-                <option value="{{ model }}">{{ model }}</option>
+                <option value="{{ model.get_source_path_basename() }}">{{ model.get_name() }}</option>
             {% endfor %}
-
-            <!-- Maybe pass checksum too as id for better verification? -->
-            <!-- {% for model in models %}
-                <option value="{\{ model }\}">{\{ model.get_name() }\}</option>
-            {% endfor %} -->
-
-            <!-- <option value="hello1">Hey!</option>
-            <option value="world">World!</option> -->
         </select>
 
         <ul id="token-options">

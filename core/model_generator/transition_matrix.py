@@ -57,6 +57,15 @@ class TransitionMatrix:
             token_total_count = sum(stats[token].values())
 
             for candidate_next_token in self.sorted_tokens:
+
+                # BUG: If last token in text only appear at the end of the text, token_total_count will be 0 as no other token can follow it
+                # Solutions to implement: 
+                # If user generates certain amount of words (current behavior) -> Make last token point to the first token
+                #   Source: https://www.cs.princeton.edu/courses/archive/fall14/cos126/assignments/markov.html 
+                # If user does not specify amount of words to generate -> Add special "end" character 
+                # Middle ground: Generate text up to certain amount of words
+                #   E.g. generate up to 1000 words, but if "end" character is selected, stop generating 
+
                 # If candidate_next_token appears in the succeeding dictionary of token,
                 #   calculate the probability of the latter succeeding token (candidate_next_token count / token_total_count)  
                 # If candidate_next_token does not appear in that dictionary, return 0 to designate that there is no probability it will succeed token

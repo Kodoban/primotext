@@ -1,4 +1,5 @@
 from .model_gen import ModelGenerator
+import re
 
 class Model:
     # Case: Model .csv does not exist
@@ -16,6 +17,9 @@ class Model:
 
     def get_source_path(self):
         return self.source_path
+
+    def get_source_path_basename(self):
+        return re.search(r'([^/\\]+)(?=\.[^/\\]+$)', self.source_path).group(1)
 
     def get_token_length(self):
         return self.token_length
