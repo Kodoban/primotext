@@ -6,75 +6,82 @@
 {% endblock %}
 
 {% block body %}
-<header>
-    <p>
-        HELLO!
-    </p>
-</header>
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Primotext</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</nav>
+
+<br>
 
 <main>
 
-    <section id="add-file">
-        <label for="file-input" style=" background: #5f0202;">Upload model</label>
-        <input type="file" id="file-input" name="file-input1" accept="text/plain" 
-        style="opacity: 0;">
-            
-
-        <!-- <input type="file" id="file-input" accept="text/plain"> -->
-        <!-- <button onclick="selectFileToCreateModel()">Select Text File</button>     -->
+    <section id="addFile">
+        <form class="mb-3" method="post" enctype="multipart/form-data">
+            <label for="fileInput" class="btn btn-primary form-label" id="fileInputButton">Upload model</label>
+            <input class="form-control" type="file" id="fileInput" name="file-input" accept="text/plain" 
+            onchange="selectFileUploadEventListener(this)" style="display: none;">
+        </form>
     </section>
 
-    <section id="generate-section">
+    <div id="mainContentFlex" class="d-flex p-2">
+        <div id="modelConfiguration" class="p-2">
+            <section id="modelSelection">
 
-        <label for="models">Models</label>
-        <select name="available-models" id="available-models" size="8">
-            
-            {% for model in models %}
-                <option value="{{ model }}">{{ model }}</option>
-            {% endfor %}
+                <label for="availableModels" class="label label-primary">Models</label>
+                
+                <!-- Find a way to change the default selected icon appearance (e.g. more rounded) -->
+                <select class="form-select" aria-label="Models list" name="available-models" id="availableModels" size="8">
+                    
+                    {% for model in models %}
+                        <option value="{{ model.get_source_path_basename() }}">{{ model.get_name() }}</option>
+                    {% endfor %}
+                </select>
 
-            <!-- Maybe pass checksum too as id for better verification? -->
-            <!-- {% for model in models %}
-                <option value="{\{ model }\}">{\{ model.get_name() }\}</option>
-            {% endfor %} -->
+            </section>
+            <br>
+            <section id="modelParameters">
 
-            <!-- <option value="hello1">Hey!</option>
-            <option value="world">World!</option> -->
-        </select>
+                <ul class="list-group list-group-flush" id="tokenOptions">
+                    <li class="list-group-item form-outline">
+                        <label for="wordNum" class="label form-check-label">Words to generate</label>
+                        <input class="form-control" id="wordNum" type="number" value="1" min="1"/>
+                    </li>
+                    <li class="list-group-item">
+                        <label for="tokenCount" class="label form-check-label">Tokens per entry (not implemented for 2+ words per token)</label>
+                        <input class="form-control" id="tokenCount" type="number" value="1" min="1"/>
+                    </li>
+                </ul>
 
-        <ul id="token-options">
-            <li>
-                <label>Words to generate</label>
-                <input id="word-num" type="number" value="1" min="1"/>
-            </li>
-            <li>
-                <label>Tokens per entry</label>
-                <input id="token-count" type="number" value="1" min="1"/>
-            </li>
-        </ul>
-        <ul id="printing-options">
-            <!-- Show details on hover (e.g. csv is used for imports) -->
-            <li id="print-matrix-to-csv">
-                <label>Print matrix to .csv</label>
-                <input type="checkbox"></button>
-            </li>
-            <li id="print-tokens-to-txt">
-                <label>Print tokens to .txt</label>
-                <input type="checkbox">
-            </li>
-        </ul>
-    </section>
+                <ul class="list-group list-group-flush" id="printingOptions">
+                    <!-- Show details on hover (e.g. csv is used for imports) -->
+                    <li class="list-group-item" id="printMatrixToCsv">
+                        <input class="form-check-input me-1" type="checkbox" id="checkboxPrintMatrixToCsv">
+                        <label class="form-check-label stretched-link" for="checkboxPrintMatrixToCsv">Print matrix to .csv (not implemented)</label>
+                    </li>
+                    <li class="list-group-item" id="printTokensToTxt">
+                        <input class="form-check-input me-1" type="checkbox" id="checkboxPrintTokensToTxt">
+                        <label class="form-check-label" for="checkboxPrintTokensToTxt">Print tokens to .txt (not implemented)</label>
+                    </li>
+                </ul>
+            </section>
 
-    <!-- <form action="/" method="post"> -->
-    <textarea id="generated-text-area" placeholder="Write something"></textarea>
-    <button id="generate-text-button" onclick="setGenerateTextButtonEventListener()">Generate text</button>
+            <br>
 
-        <!-- <input type="submit" name="generate" value="Generate"> -->
-    <!-- </form> -->
+            <button class="btn btn-outline-primary" id="generateTextButton" onclick="setGenerateTextButtonEventListener()">Generate text</button>
+        </div>
 
-    
-    
-
+        <div id="generatedTextArea" class="p-2">
+            <!-- <form action="/" method="post"> -->
+            <section class="mb-3" id="generateTextSection">
+                <label for="textboxGeneratedText" class="label label-primary">Generated text</label>
+                <textarea class="form-control" id="textboxGeneratedText" placeholder="Write something" rows="24"></textarea>
+            </section>
+        </div>
+    </div>
 </main>
 
 <footer>

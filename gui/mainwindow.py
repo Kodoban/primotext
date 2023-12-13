@@ -75,13 +75,13 @@ class MainWindow(QMainWindow):
 
                 # Check if file model has already been created
                 token_length = self.ui.spinBox_tokensPerEntry.value()
-                model_name, model_path, create_new_list_item = core.check_add_model(user_source_file_path, token_length)
+                model_name, model_path, source_file_path, create_new_list_item = core.check_add_model(user_source_file_path, token_length)
 
                 # Add entry to list if it does not exist already, and make it the selected choice
                 # TODO: Differentiate between models with the same name (e.g. using last modified date on file)
 
                 if create_new_list_item:
-                    new_item = self.add_model_to_list_widget(core.generate_model(model_name, model_path, user_source_file_path, token_length))
+                    new_item = self.add_model_to_list_widget(core.generate_model(model_name, model_path, source_file_path, token_length))
                     self.ui.listWidget_generatedModels.setCurrentItem(new_item)
 
     def generate_text_button_clicked(self):
