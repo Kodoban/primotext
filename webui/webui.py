@@ -51,7 +51,7 @@ def index():
         crossorigin = "anonymous"
     
     return render_template("index.html", \
-        models =app.existing_models, \
+        models = app.existing_models, \
         jquery_source = jquery_source, \
         integrity = integrity, \
         crossorigin = crossorigin, \

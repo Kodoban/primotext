@@ -3,13 +3,32 @@ body {
     font-family: serif
 }
 
-input[type="file"] {
-    display: none;
+label {
+    margin-bottom: 10px;
 }
 
-.custom-file-upload {
-    border: 1px solid #ccc;
-    display: inline-block;
-    padding: 6px 12px;
-    cursor: pointer;
+#fileInputButton {
+    margin: 10px;
+    background: #9b0e0e;
+}
+
+.form-select {
+    position: relative;
+}
+
+.list-group-flush li {
+    border: none;
+    padding-left: unset;
+}
+
+#modelConfiguration {
+    flex: 3;
+}
+
+#generatedTextArea {
+    flex: 7;
+}
+
+#generateTextButton {
+    width: 100%;
 }

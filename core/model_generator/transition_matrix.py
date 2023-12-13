@@ -58,7 +58,7 @@ class TransitionMatrix:
 
             for candidate_next_token in self.sorted_tokens:
 
-                # BUG: If last token in text only appear at the end of the text, token_total_count will be 0 as no other token can follow it
+                # BUG: If last token in text only appears at the end of the text, token_total_count will be 0 as no other token can follow it
                 # Solutions to implement: 
                 # If user generates certain amount of words (current behavior) -> Make last token point to the first token
                 #   Source: https://www.cs.princeton.edu/courses/archive/fall14/cos126/assignments/markov.html 

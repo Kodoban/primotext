@@ -4,11 +4,11 @@ setGenerateTextButtonEventListener();
 selectFileUploadEventListener();
 
 function setGenerateTextButtonEventListener() {
-    var generateTextButton = document.getElementById("generate-text-button");
+    var generateTextButton = document.getElementById("generateTextButton");
     generateTextButton.addEventListener('click', function () {
-            let chosenModelId = document.getElementById("available-models").selectedIndex
-            let wordGenerateNum = document.getElementById("word-num").value
-            let tokenCountPerEntry = document.getElementById("token-count").value
+            let chosenModelId = document.getElementById("availableModels").selectedIndex
+            let wordGenerateNum = document.getElementById("wordNum").value
+            let tokenCountPerEntry = document.getElementById("tokenCount").value
             // change later
             sendGenerateAjaxRequest(chosenModelId, wordGenerateNum, tokenCountPerEntry);
 
@@ -17,7 +17,7 @@ function setGenerateTextButtonEventListener() {
 
 function selectFileUploadEventListener(input) {
     var uploadedFile = input.files[0];
-    var tokenLength = document.getElementById("token-count").value;
+    var tokenLength = document.getElementById("tokenCount").value;
     
     var formData = new FormData();
     formData.append('user_source_file', uploadedFile);
@@ -39,8 +39,8 @@ function selectFileUploadEventListener(input) {
             newOption.text = response.model_name; 
             newOption.value = response.model_unique_value;
             
-            document.getElementById("available-models").add(newOption);
-            document.getElementById("available-models").value=newOption.value;
+            document.getElementById("availableModels").add(newOption);
+            document.getElementById("availableModels").value=newOption.value;
 
         },
         error: function(error) {
@@ -63,8 +63,8 @@ function sendCreateModelAjaxRequest(selectedFile, tokenLength) {
             newOption.text = response; 
             newOption.value = response;
             
-            document.getElementById("available-models").add(newOption);
-            document.getElementById("available-models").value=response;
+            document.getElementById("availableModels").add(newOption);
+            document.getElementById("availableModels").value=response;
 
         },
         error: function(error) {
@@ -75,23 +75,20 @@ function sendCreateModelAjaxRequest(selectedFile, tokenLength) {
 }
 
 function sendGenerateAjaxRequest(chosenModelId, wordGenerateNum, tokenCountPerEntry) {
-    // console.log(chosenModel, wordGenerateNum, tokenCountPerEntry);
     $.ajax({
         type: "POST",
         url: "/generate_sentence",
-        // url: "{{ url_for('generate_sentence') }}",
-        // data: {"name" : "Jim"},
         data: {"chosen_model_id" : chosenModelId, "word_generate_num" : wordGenerateNum, "token_count_per_entry" : tokenCountPerEntry},
         
         success: function(response) {
             // Handle the response from the server
-            let textArea = document.getElementById('generated-text-area')
-            textArea.value = "";
+            let textbox = document.getElementById('textboxGeneratedText')
+            textbox.value = "";
 
             let index = 0;
             function printSentenceWordByWord() {
                 if (index < response.length) {
-                    textArea.value += response[index] + " "; // Append the string to the text field with a new line
+                    textbox.value += response[index] + " "; // Append the string to the text field with a new line
                     index++;
                     setTimeout(printSentenceWordByWord, Math.floor(Math.random() * 200) + 50); // Set a delay before printing the next string (adjust the delay as needed)
                 }
