@@ -1,6 +1,7 @@
 text_models.db
 _source_files/
 _models/
+.stfolder/
 core/__pycache__/
 core/sample_texts/
 core/model_generator/__pycache__/
