@@ -14,15 +14,15 @@ class TextGenerator:
             #generate_more = (input("Generate more text? (y/n): ")).lower() == "y"
 
     # GUI init
-    def __init__(self, transition_matrix, sorted_tokens, word_num, token_count_per_entry):
-        self.__form_sentence(transition_matrix, sorted_tokens, word_num, token_count_per_entry)
+    def __init__(self, transition_matrix, sorted_tokens, word_num, token_count_per_entry, end_token=None):
+        self.__form_sentence(transition_matrix, sorted_tokens, word_num, token_count_per_entry, end_token)
 
     def get_sentence(self):
         return self.sentence
 
     #private
 
-    def __form_sentence(self, transition_matrix, sorted_tokens, word_num, token_count_per_entry):
+    def __form_sentence(self, transition_matrix, sorted_tokens, word_num, token_count_per_entry, end_token):
 
         self.sentence = []
         # Return a random word from sorted_words as the first word
@@ -41,10 +41,15 @@ class TextGenerator:
         for i in range(word_num-1): 
             # Returned as a list of tuples: (probability, index)
             feasible_tokens = [(row[chosen_token_index], i) for i, row in enumerate(transition_matrix) if row[chosen_token_index]>0]
+            
             # Randomly choose an index. Each index has a probability, which is interpreted as a weight by random.choices()
             chosen_token_index = random.choices([x[1] for x in feasible_tokens], weights=[x[0] for x in feasible_tokens])[0]
             # Translate index to token
             chosen_token = sorted_tokens[chosen_token_index]
+
+            # If chosen_token is the special end token, the sentence must be prematurely ended
+            if chosen_token == end_token:
+                return
 
             self.sentence.append(chosen_token)
 
