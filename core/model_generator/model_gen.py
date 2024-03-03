@@ -10,12 +10,16 @@ class ModelGenerator:
     def __init__(self, model, csv_path=None):
         if csv_path is None:
             # Create transition matrix from source file
-            contents = self.__read_file(model.get_source_path())
+            with open(model.get_source_path(), "r") as f:
+                contents = f.read()
+            
+            # TODO: Check if function can be removed
             clean_text = self.__clean_up_text(contents, model.get_token_length())
 
             transition_matrix = TransitionMatrix(text=clean_text)
             model.set_transition_matrix(transition_matrix)
 
+            # TODO: Check if function can be removed
             self.__print_to_csv(transition_matrix.get_matrix(), transition_matrix.get_sorted_tokens(), model.get_path(), model.get_token_length())
 
         else:
@@ -27,12 +31,7 @@ class ModelGenerator:
 
     # private functions
 
-    def __read_file(self, file):
-        with open(file, "r") as f:
-            contents = f.read()
-
-        return contents
-
+    # TODO: Redo for 2+ word tokens
     def __clean_up_text(self, contents, token_length):  # Check for variable token length:
         match token_length:
             case 1:

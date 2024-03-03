@@ -71,8 +71,6 @@ def generate_model(model_name, model_path, source_file_path, token_length):
 
 ##########
 def check_add_model(source_file_tmp_path, token_length):
-
-# def check_add_model(con, cur, source_file_tmp_path, token_length):
     model_name, model_path, source_file_path, checksum = __check_model_already_exists(source_file_tmp_path, token_length)
 
     # Model for source file has not been generated yet (or the .csv file containing the transition matrix for the model does not exist anymore)
