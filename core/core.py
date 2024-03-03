@@ -5,7 +5,7 @@ import hashlib
 import shutil
 
 from pathlib import Path
-from model_generator import Model
+from model_generator import Model, SPECIAL_END_TOKEN
 from text_generator import TextGenerator
 
 PROGRAM_ROOT_DIR = str(Path(__file__).resolve().parent.resolve().parent)
@@ -173,6 +173,6 @@ def check_create_model(model):
 
 def generate_sentence(model, word_generate_num, token_count_per_entry):
     tgen = TextGenerator(model.get_transition_matrix(), \
-                model.get_sorted_tokens(), word_generate_num, token_count_per_entry)
+                model.get_sorted_tokens(), word_generate_num, token_count_per_entry, SPECIAL_END_TOKEN)
 
     return tgen.get_sentence()
