@@ -31,9 +31,9 @@ class TextGenerator:
         match token_count_per_entry:
             case 1:
                 chosen_token, chosen_token_index = random.choice([(alpha_token, index) for index,alpha_token in enumerate(sorted_tokens) if alpha_token.isalpha()])
-            case 2:
-                chosen_token, chosen_token_index = \
-                random.choice([(alpha_beginning_word, index) for index,alpha_beginning_word in enumerate(sorted_tokens) if alpha_beginning_word.split(" ")[0].isalpha()])
+            # case 2:
+            #     chosen_token, chosen_token_index = \
+            #     random.choice([(alpha_beginning_word, index) for index,alpha_beginning_word in enumerate(sorted_tokens) if alpha_beginning_word.split(" ")[0].isalpha()])
 
         self.sentence.append(chosen_token)
 

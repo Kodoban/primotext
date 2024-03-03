@@ -34,12 +34,7 @@ class MainWindow(QMainWindow):
 
         self.ui.pushButton_generateText.clicked.connect(lambda x: self.generate_text_button_clicked())
 
-        self.load_existing_models()
-
-    def load_existing_models(self):
-        # con, cur, existing_models = core.get_existing_models()
         existing_models = core.get_existing_models()
-
         for model in existing_models:
             self.add_model_to_list_widget(model)
 
@@ -96,23 +91,17 @@ class MainWindow(QMainWindow):
             core.check_create_model(chosen_model)
             generated_sentence = core.generate_sentence(chosen_model, word_generate_num, token_count_per_entry)
 
-            self.print_sentence(generated_sentence)
+            # Print generated sentence
+            self.ui.textEdit_generatedText.clear()        
+            for token in generated_sentence:
+                self.ui.textEdit_generatedText.insertPlainText(token + " ")
+                self.ui.textEdit_generatedText.repaint()
+                QApplication.processEvents()
 
+                # time.sleep(random.uniform(0.05,0.3))
+                time.sleep(random.uniform(0.02,0.15))
         else:
             print("Please select an item first!")
-
-
-    def print_sentence(self, generated_sentence):
-        
-        self.ui.textEdit_generatedText.clear()
-        
-        for token in generated_sentence:
-            self.ui.textEdit_generatedText.insertPlainText(token + " ")
-            self.ui.textEdit_generatedText.repaint()
-            QApplication.processEvents()
-
-            # time.sleep(random.uniform(0.05,0.3))
-            time.sleep(random.uniform(0.02,0.15))
 
 if __name__ == "__main__":
 

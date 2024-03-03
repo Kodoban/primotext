@@ -4,11 +4,86 @@ SPECIAL_END_TOKEN = "~~}EOF"
 
 class TransitionMatrix:
     def __init__(self, text=None, csv_reader=None):
+        # Either text or csv_reader is None
+        
+        # List of tokens passed -> Create the transition matrix after going through the text file
         if csv_reader is None:
-            # List of tokens passed
-            self.__create_transition_matrix(text)
+
+            # Step 1. Create a dictionary of all words in the text file
+            stats = {} # { token str : { token_after str : count int } }
+
+            previous_token = None
+            main_token = None
+            for token in text:
+                # The token contains an alphanumeric token and optionally punctuation marks at the beginning or the end of the token
+                # The function checks whether the token starts or ends with punctuation marks. 
+                # If so, it splits the string so that the alphanumeric token and the punctuation marks (if they exist)
+                ## punc_left, main_token, punc_right = self.__add_new_token(stats, token, previous_token)
+
+                # for token="@!hello?>" => punc_left = ["@", "!"], main_token = "hello", punc_right = ["?", ">"]
+                punc_left, main_token, punc_right = self.__check_for_edge_punctuation([], token, [])
+                
+                # left punctuation marks
+                for left_punc_mark in punc_left:
+                    previous_token = self.__add_token_to_stats(stats, left_punc_mark, previous_token)
+
+                # main token
+                previous_token = self.__add_token_to_stats(stats, main_token, previous_token)
+
+                # right punctuation marks
+                for right_punc_mark in punc_right:
+                    previous_token = self.__add_token_to_stats(stats, right_punc_mark, previous_token)
+
+                # Set the right-most token (last punctuation mark if it exists, else the token itself) as the last token checked
+                previous_token = main_token if not punc_right else punc_right[-1]
+
+            """ 
+            Check if last token examined (aka previous_token) can be succeeded
+            Assuming a Markov chain with 1-word tokens of the sentence "a text of text M", the 'M' token does not point to any other tokens.
+            Practically, if 'M' is selected to be printed, the generated sentence will have to end after it.
+            However, the probability of the tokens (and their sum as well) that can succeed 'M' is 0.
+            To avoid raising an error (this would defeat the purpose and ease of simply dropping a text file and generating sentences from it)
+                or pointing to the first token (Source: https://www.cs.princeton.edu/courses/archive/fall14/cos126/assignments/markov.html, would create inaccuracies though),
+                the solution will be to add a special end token just for this case, which will stop the text generation if it is selected. 
+            """
+            if not stats[previous_token]:
+                stats[previous_token][SPECIAL_END_TOKEN] = 1
+                """
+                Add the special end token to the matrix so it becomes Markovian. 
+                Since the sum of its probabilities must equal 1, even if the text generation will stop after it is selected,
+                    the "hack" is to arbitrarily have it pointing to any token with a probability of 1,
+                    therefore it points to itself in a closed loop to not "interfere" with the actual tokens. 
+                """
+                stats[SPECIAL_END_TOKEN] = {SPECIAL_END_TOKEN : 1}
+
+            # Sort tokens alphabetically 
+            self.sorted_tokens = sorted(stats.keys())
+
+            # Step 2. Create the transition matrix
+            print("Creating the transition matrix (this might take some time)...")
+            # Calculate probabilities
+            self.matrix = {}
+            # all_sums_one = True
+
+            for token in self.sorted_tokens:
+                self.matrix[token] = {} # { token str : { next_token str : probability float } }
+
+                # Calculate the amount of times the token appears in the text. 
+                # This will be used to calculate the probability of each succeeding token to come after it
+                token_total_count = sum(stats[token].values())
+
+                for candidate_next_token in self.sorted_tokens:
+
+                    # If candidate_next_token appears in the succeeding dictionary of token,
+                    #   calculate the probability of the latter succeeding token (candidate_next_token count / token_total_count)  
+                    # If candidate_next_token does not appear in that dictionary, return 0 to designate that there is no probability it will succeed token
+                    # stats[token].get(candidate_next_token, 0) returns the value in the dictionary if candidate_next_token exists, otherwise 0
+                    self.matrix[token][candidate_next_token] = \
+                        stats[token].get(candidate_next_token, 0) / token_total_count
+
+        # csv_reader passed -> Import the tokens and probabilities from the csv file
         elif text is None:
-            # csv_reader passed
+            
             # Ignore header, sorted_tokens can also be generated from the first column
             next(csv_reader, None)
 
@@ -41,100 +116,6 @@ class TransitionMatrix:
         return self.array_matrix
 
     #private
-
-    def __create_transition_matrix(self, text):
-
-        stats = self.__create_stats_dict(text) # { token str : { token_after str : count int } }
-
-        print("Creating the transition matrix (this might take some time)...")
-        # Calculate probabilities
-        self.matrix = {}
-        # all_sums_one = True
-
-        for token in self.sorted_tokens:
-            self.matrix[token] = {} # { token str : { next_token str : probability float } }
-
-            # Calculate the amount of times the token appears in the text. 
-            # This will be used to calculate the probability of each succeeding token to come after it
-        #     """ There is a fringe case where the last character of the textfile only appears at the end of it,
-        #         Assuming a Markov chain with 1-word tokens of the sentence "This is a text of text M", the 'M' token does not point to any other tokens,
-        #             so the entry for 'M' in stats will be an empty dictionary.
-        #         This means that no character can succeed 'M', therefore all the probabilities of its entry in the matrix will be 0.
-        #         However, since these probabilities are calculated with the formula 
-        #                 stats[token].get(candidate_next_token, 0) / token_total_count
-        #             and the divisor cannot be 0 (or an error will be thrown), token_total_count will equal 1 for that specific case,
-        #             and stats[token].get(candidate_next_token, 0) will return 0 for each candidate_next_token.
-        # """
-
-            token_total_count = sum(stats[token].values())
-
-            for candidate_next_token in self.sorted_tokens:
-
-                # If candidate_next_token appears in the succeeding dictionary of token,
-                #   calculate the probability of the latter succeeding token (candidate_next_token count / token_total_count)  
-                # If candidate_next_token does not appear in that dictionary, return 0 to designate that there is no probability it will succeed token
-                # stats[token].get(candidate_next_token, 0) returns the value in the dictionary if candidate_next_token exists, otherwise 0
-                self.matrix[token][candidate_next_token] = \
-                    stats[token].get(candidate_next_token, 0) / token_total_count
-
-    def __create_stats_dict(self, text):
-        
-        # TODO: Add description here
-        stats = {} # { token str : { token_after str : count int } }
-
-        previous_token = None
-        main_token = None
-        for token in text:
-            # The token contains an alphanumeric token and optionally punctuation marks at the beginning or the end of the token
-            # The function checks whether the token starts or ends with punctuation marks. 
-            # If so, it splits the string so that the alphanumeric token and the punctuation marks (if they exist) separated
-            punc_left, main_token, punc_right = self.__add_new_token(stats, token, previous_token)
-
-            # Set the right-most token (last punctuation mark to the left, if it exists, else the token itself) as the last token checked
-            previous_token = main_token if not punc_right else punc_right[-1]
-
-
-        """ 
-        Check if last token examined (aka previous_token) can be succeeded
-        Assuming a Markov chain with 1-word tokens of the sentence "This is a text of text M", the 'M' token does not point to any other tokens.
-        Practically, if 'M' is selected to be printed, the generated sentence will have to end after it.
-        However, the probability of the tokens (and their sum as well) that can succeed 'M' is 0.
-        To avoid raising an error (this would defeat the purpose and ease of simply dropping a text file and generating sentences from it)
-            or pointing to the first token (Source: https://www.cs.princeton.edu/courses/archive/fall14/cos126/assignments/markov.html, would create inaccuracies though),
-            the solution will be to add a special end token just for this case, which will stop the text generation if it is selected. 
-        """
-        if not stats[previous_token]:
-            stats[previous_token][SPECIAL_END_TOKEN] = 1
-            """
-            Add the special end token to the matrix so it becomes Markovian. 
-            Since the sum of its probabilities must equal 1, even if the text generation will stop after it is selected,
-                the "hack" is to arbitrarily have it pointing to any token with a probability of 1,
-                therefore it points to itself in a closed loop to not "interfere" with the actual tokens. 
-            """
-            stats[SPECIAL_END_TOKEN] = {SPECIAL_END_TOKEN : 1}
-
-        # Sort tokens alphabetically 
-        self.sorted_tokens = sorted(stats.keys())
-
-        return stats
-
-    def __add_new_token(self, stats, new_token, previous_token):
-        punc_left, main_token, punc_right = self.__check_for_edge_punctuation([], new_token, [])
-        # for new_token="@!hello?>" => punc_left = ["@", "!"], new_token = "hello", punc_right = ["?", ">"]
-
-        # left punctuation marks
-        # 
-        for left_punc_mark in punc_left:
-            previous_token = self.__add_token_to_stats(stats, left_punc_mark, previous_token)
-
-        # main token
-        previous_token = self.__add_token_to_stats(stats, main_token, previous_token)
-
-        # right punctuation marks
-        for right_punc_mark in punc_right:
-            previous_token = self.__add_token_to_stats(stats, right_punc_mark, previous_token)
-
-        return punc_left, main_token, punc_right 
 
     def __check_for_edge_punctuation(self, punc_left, token, punc_right):
 
